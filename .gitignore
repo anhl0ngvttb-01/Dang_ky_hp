@@ -1,0 +1,39 @@
+# === Dependencies ===
+node_modules/
+package-lock.json
+
+# === Environment ===
+.env
+.env.local
+.env.production
+
+# === Logs ===
+*.log
+npm-debug.log*
+
+# === Uploads ===
+public/uploads/*
+!public/uploads/.gitkeep
+
+# === Database backup ===
+database/backup/*
+!database/backup/.gitkeep
+
+# === OS ===
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# === Editor ===
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# === Test ===
+coverage/
+.nyc_output/
+
+# === Build ===
+dist/
+build/
