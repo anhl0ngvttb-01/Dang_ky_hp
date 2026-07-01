@@ -1,4 +1,5 @@
-
+﻿SET NAMES utf8mb4;
+USE course_registration;
 
 INSERT INTO vai_tro (ma_vai_tro, ten_vai_tro, mo_ta) VALUES
 (1, 'admin', 'Quản trị viên toàn quyền hệ thống'),
@@ -26,7 +27,7 @@ INSERT INTO mon_hoc (ma_mon_hoc_id, ma_mon_hoc, ten_mon_hoc, so_tin_chi, mo_ta, 
 INSERT INTO hoc_ky (ma_hoc_ky_id, ten_hoc_ky, ma_hoc_ky, ngay_bat_dau, ngay_ket_thuc, ngay_bat_dau_dk, ngay_ket_thuc_dk, trang_thai) VALUES
 (1, 'Học kỳ 1 Năm học 2026-2027', 'HK261', '2026-08-15', '2026-12-30', '2026-07-01', '2026-07-15', 'dang_mo');
 
--- Ví dụ mở đăng ký so le theo khóa (K15 đăng ký trước, các khóa khác dùng cửa sổ mặc định ở hoc_ky)
+-- Ví dụ mở đăng ký so le theo khóa: khóa 2026 đăng ký từ 2026-07-01 đến 2026-07-03.
 INSERT INTO dot_dang_ky (ma_dot_id, ma_hoc_ky, khoa, ngay_bat_dau, ngay_ket_thuc) VALUES
 (1, 1, '2026', '2026-07-01', '2026-07-03');
 
@@ -35,7 +36,7 @@ INSERT INTO hoc_phan (ma_hoc_phan_id, ma_hoc_phan, ma_mon_hoc, ma_giang_vien, ma
 (2, 'HP002', 2, 1, 1, 4, 4, 6, 'Phòng 502-B1', 3, 45, 0, 'mo_dang_ky'),
 (3, 'HP003', 3, 1, 1, 2, 4, 6, 'Phòng 101-A1', 4, 80, 0, 'mo_dang_ky');
 
- tong_tin_chi để 0, trigger sẽ tự cộng dồn khi insert chi_tiet_dang_ky bên dưới
+-- tong_tin_chi để 0, trigger sẽ tự cộng dồn khi insert chi_tiet_dang_ky bên dưới.
 INSERT INTO dang_ky (ma_dang_ky, ma_sinh_vien, ma_hoc_ky, ngay_dang_ky, tong_tin_chi, trang_thai) VALUES
 (1, 1, 1, '2026-07-01 08:30:00', 0, 'da_duyet');
 
