@@ -5,12 +5,11 @@
 
 -- Mật khẩu gốc của tất cả tài khoản dưới đây là: 123456
 INSERT INTO nguoi_dung (ma_nguoi_dung, ten_dang_nhap, mat_khau, email, ma_vai_tro, trang_thai) VALUES
-(1, 'admin01', '$2b$10$40xFQrPtr6KLt9o9cePE8.2IwRzEchOTLzHeqGgOeKyyjChlIFAJu', 'admin@school.edu.vn', 1, 'hoat_dong'),      -- 123456
-(2, 'sv202601', '$2b$10$40xFQrPtr6KLt9o9cePE8.2IwRzEchOTLzHeqGgOeKyyjChlIFAJu', 'nguyenvana@student.edu.vn', 2, 'hoat_dong'), -- 123456
-(3, 'sv202602', '$2b$10$40xFQrPtr6KLt9o9cePE8.2IwRzEchOTLzHeqGgOeKyyjChlIFAJu', 'lethib@student.edu.vn', 2, 'hoat_dong'),     -- 123456
-(4, 'gv_minh', '$2b$10$40xFQrPtr6KLt9o9cePE8.2IwRzEchOTLzHeqGgOeKyyjChlIFAJu', 'nguyenvanminh@teacher.edu.vn', 3, 'hoat_dong'); -- 123456
+(1, 'admin01', '$2b$10$P3rfR0zf4oXbqy1NcoDEzOvHovWFTN6SOxpt4C.vOftIJZvXRBxOG', 'admin@school.edu.vn', 1, 'hoat_dong'),
+(2, 'sv202601', '$2b$10$P3rfR0zf4oXbqy1NcoDEzOvHovWFTN6SOxpt4C.vOftIJZvXRBxOG', 'nguyenvana@student.edu.vn', 2, 'hoat_dong'),
+(3, 'sv202602', '$2b$10$P3rfR0zf4oXbqy1NcoDEzOvHovWFTN6SOxpt4C.vOftIJZvXRBxOG', 'lethib@student.edu.vn', 2, 'hoat_dong'),
+(4, 'gv_minh', '$2b$10$P3rfR0zf4oXbqy1NcoDEzOvHovWFTN6SOxpt4C.vOftIJZvXRBxOG', 'nguyenvanminh@teacher.edu.vn', 3, 'hoat_dong');
 
--- FIX: khoa='2023' đổi thành '2026' để khớp với ten_dang_nhap 'sv202601' / 'sv202602'
 INSERT INTO sinh_vien (ma_sinh_vien_id, ma_nguoi_dung, ma_sinh_vien, ho_ten, gioi_tinh, ngay_sinh, so_dien_thoai, email, dia_chi, lop, nganh_hoc, khoa, trang_thai) VALUES
 (1, 2, 'SV001', 'Nguyễn Văn A', 'Nam', '2005-05-15', '0912345678', 'nguyenvana@student.edu.vn', '123 Đường Láng, Hà Nội', 'KHMT-K15', 'Khoa học máy tính', '2026', 'dang_hoc'),
 (2, 3, 'SV002', 'Lê Thị B', 'Nữ', '2005-09-20', '0987654321', 'lethib@student.edu.vn', '456 Cầu Giấy, Hà Nội', 'CNTT-K15', 'Công nghệ thông tin', '2026', 'dang_hoc');
