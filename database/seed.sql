@@ -1,4 +1,4 @@
-﻿SET NAMES utf8mb4;
+﻿SET NAMES 'utf8mb4';
 USE course_registration;
 
 INSERT INTO vai_tro (ma_vai_tro, ten_vai_tro, mo_ta) VALUES
