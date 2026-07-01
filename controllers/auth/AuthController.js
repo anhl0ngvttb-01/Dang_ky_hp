@@ -1,7 +1,6 @@
 ﻿const bcrypt = require("bcrypt");
 const UserModel = require("../../models/auth/UserModel");
 const RoleModel = require("../../models/auth/RoleModel");
-const StudentAccountModel = require("../../models/auth/StudentAccountModel");
 const TeacherAccountModel = require("../../models/auth/TeacherAccountModel");
 const validators = require("../../helpers/validators");
 
@@ -13,7 +12,9 @@ function redirectByRole(roleName) {
 }
 
 async function renderRegisterWithRoles(res, status, error, form = {}) {
-  const roles = await RoleModel.getAll();
+  const roles = (await RoleModel.getAll()).filter(
+    (role) => role.ten_vai_tro !== "student",
+  );
   return res.status(status).render("auth/register", {
     title: "Đăng ký tài khoản",
     roles,
@@ -32,7 +33,18 @@ const AuthController = {
   },
 
   async renderRegister(req, res) {
-    const roles = await RoleModel.getAll();
+    if (!req.session.user || req.session.user.maVaiTro !== 1) {
+      return res.render("auth/login", {
+        title: "Đăng nhập",
+        error:
+          "Chỉ quản trị viên mới được tạo tài khoản. Vui lòng đăng nhập bằng tài khoản admin.",
+        form: {},
+      });
+    }
+
+    const roles = (await RoleModel.getAll()).filter(
+      (role) => role.ten_vai_tro !== "student",
+    );
     return res.render("auth/register", {
       title: "Đăng ký tài khoản",
       roles,
@@ -45,7 +57,10 @@ const AuthController = {
     try {
       const { tenDangNhap, matKhau } = req.body;
 
-      if (!validators.isRequired(tenDangNhap) || !validators.isRequired(matKhau)) {
+      if (
+        !validators.isRequired(tenDangNhap) ||
+        !validators.isRequired(matKhau)
+      ) {
         return res.status(400).render("auth/login", {
           title: "Đăng nhập",
           error: "Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu.",
@@ -101,39 +116,97 @@ const AuthController = {
 
   async register(req, res) {
     try {
-      const { tenDangNhap, email, matKhau, xacNhanMatKhau, maVaiTro } = req.body;
+      if (!req.session.user || req.session.user.maVaiTro !== 1) {
+        return renderRegisterWithRoles(
+          res,
+          403,
+          "Chỉ quản trị viên mới được tạo tài khoản.",
+          req.body,
+        );
+      }
+
+      const { tenDangNhap, email, matKhau, xacNhanMatKhau } = req.body;
       const username = String(tenDangNhap || "").trim();
       const userEmail = String(email || "").trim();
-      const roleId = Number(maVaiTro);
+      const roleId = 3;
 
-      if (!validators.isRequired(username) || !validators.isRequired(userEmail) || !validators.isRequired(matKhau) || !validators.isRequired(xacNhanMatKhau) || !roleId) {
-        return renderRegisterWithRoles(res, 400, "Vui lòng nhập đầy đủ thông tin.", req.body);
+      if (
+        !validators.isRequired(username) ||
+        !validators.isRequired(userEmail) ||
+        !validators.isRequired(matKhau) ||
+        !validators.isRequired(xacNhanMatKhau)
+      ) {
+        return renderRegisterWithRoles(
+          res,
+          400,
+          "Vui lòng nhập đầy đủ thông tin.",
+          req.body,
+        );
       }
 
       if (!validators.isUsername(username)) {
-        return renderRegisterWithRoles(res, 400, "Tên đăng nhập chỉ gồm chữ, số, dấu gạch dưới và dài 3-50 ký tự.", req.body);
+        return renderRegisterWithRoles(
+          res,
+          400,
+          "Tên đăng nhập chỉ gồm chữ, số, dấu gạch dưới và dài 3-50 ký tự.",
+          req.body,
+        );
       }
 
       if (!validators.isEmail(userEmail)) {
-        return renderRegisterWithRoles(res, 400, "Email không đúng định dạng.", req.body);
+        return renderRegisterWithRoles(
+          res,
+          400,
+          "Email không đúng định dạng.",
+          req.body,
+        );
       }
 
       if (!validators.isStrongPassword(matKhau)) {
-        return renderRegisterWithRoles(res, 400, "Mật khẩu cần ít nhất 6 ký tự.", req.body);
+        return renderRegisterWithRoles(
+          res,
+          400,
+          "Mật khẩu cần ít nhất 6 ký tự.",
+          req.body,
+        );
       }
 
       if (matKhau !== xacNhanMatKhau) {
-        return renderRegisterWithRoles(res, 400, "Xác nhận mật khẩu không khớp.", req.body);
+        return renderRegisterWithRoles(
+          res,
+          400,
+          "Xác nhận mật khẩu không khớp.",
+          req.body,
+        );
       }
 
       const role = await RoleModel.getById(roleId);
       if (!role) {
-        return renderRegisterWithRoles(res, 400, "Vai trò không hợp lệ.", req.body);
+        return renderRegisterWithRoles(
+          res,
+          400,
+          "Vai trò không hợp lệ.",
+          req.body,
+        );
+      }
+
+      if (role.ten_vai_tro === "student") {
+        return renderRegisterWithRoles(
+          res,
+          400,
+          "Tài khoản sinh viên chỉ được tạo bởi quản trị viên tại mục Quản lý sinh viên.",
+          req.body,
+        );
       }
 
       const existed = await UserModel.getByUsername(username);
       if (existed) {
-        return renderRegisterWithRoles(res, 400, "Tên đăng nhập đã tồn tại.", req.body);
+        return renderRegisterWithRoles(
+          res,
+          400,
+          "Tên đăng nhập đã tồn tại.",
+          req.body,
+        );
       }
 
       const hashedPassword = await bcrypt.hash(matKhau, 10);
@@ -162,10 +235,17 @@ const AuthController = {
         });
       }
 
-      return res.redirect("/auth/login");
+      return res.redirect(
+        role.ten_vai_tro === "student" ? "/admin/students" : "/admin/dashboard",
+      );
     } catch (error) {
       console.error(error);
-      return renderRegisterWithRoles(res, 500, "Đăng ký thất bại. Vui lòng kiểm tra dữ liệu và thử lại.", req.body);
+      return renderRegisterWithRoles(
+        res,
+        500,
+        "Đăng ký thất bại. Vui lòng kiểm tra dữ liệu và thử lại.",
+        req.body,
+      );
     }
   },
 

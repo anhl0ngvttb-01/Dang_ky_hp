@@ -1,76 +1,74 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title><%= title %></title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/css/app.css" />
     <link rel="stylesheet" href="/css/student.css" />
   </head>
-  <body class="bg-body-tertiary">
-    <nav class="navbar navbar-expand-lg bg-white border-bottom">
-      <div class="container">
-        <a class="navbar-brand" href="/student/dashboard">Sinh viên</a>
-        <div class="d-flex gap-2">
-          <a class="btn btn-outline-primary btn-sm" href="/student/profile">Hồ sơ</a>
-          <a class="btn btn-outline-danger btn-sm" href="/auth/logout">Đăng xuất</a>
+  <body>
+    <div class="app-shell">
+      <aside class="app-sidebar">
+        <a class="app-brand" href="/student/dashboard"><span class="brand-mark">SV</span><span>Sinh vien</span></a>
+        <nav class="app-nav">
+          <a href="/student/dashboard">Dashboard</a>
+          <a href="/student/profile">Ho so</a>
+          <a class="active" href="/student/registrations">Dang ky hoc phan</a>
+          <a href="/auth/logout">Dang xuat</a>
+        </nav>
+      </aside>
+      <main class="app-main">
+        <div class="topbar">
+          <div class="page-title"><h1>Dang ky hoc phan</h1><p><%= student ? student.ho_ten : 'Sinh vien' %></p></div>
+          <div class="credit-summary content-card py-3"><div class="stat-label">Tin chi</div><div class="h4 mb-0"><%= activeCredits || 0 %>/<%= maxCredits || 24 %></div></div>
         </div>
-      </div>
-    </nav>
-    <main class="container main-container py-4">
-      <div class="card border-0 shadow-sm mb-4">
-        <div class="card-body p-4">
-          <h1 class="h4 mb-3">Đăng ký học phần</h1>
-          <% if (error) { %><div class="alert alert-danger"><%= error %></div><% } %>
-          <% if (success) { %><div class="alert alert-success"><%= success %></div><% } %>
+        <% if (error) { %><div class="alert alert-danger"><%= error %></div><% } %>
+        <% if (success) { %><div class="alert alert-success"><%= success %></div><% } %>
+
+        <section class="content-card mb-4">
+          <div class="meta-grid mb-4">
+            <div class="meta-box"><span class="meta-label">Hoc ky</span><strong><%= semester ? semester.ten_hoc_ky : 'Chua chon' %></strong></div>
+            <div class="meta-box"><span class="meta-label">Trang thai</span><strong><%= semester ? semester.trang_thai : '-' %></strong></div>
+            <div class="meta-box"><span class="meta-label">Khoa</span><strong><%= student ? student.khoa : '-' %></strong></div>
+          </div>
           <form method="GET" action="/student/registrations" class="row g-3 align-items-end mb-3">
-            <div class="col-md-6">
-              <label class="form-label">Học kỳ</label>
+            <div class="col-md-5">
+              <label class="form-label">Hoc ky</label>
               <select class="form-select" name="maHocKy" onchange="this.form.submit()">
-                <% semesters.forEach(semester => { %>
-                <option value="<%= semester.ma_hoc_ky_id %>" <%= Number(selectedSemesterId) === Number(semester.ma_hoc_ky_id) ? 'selected' : '' %>><%= semester.ten_hoc_ky %></option>
+                <% semesters.forEach(semesterItem => { %>
+                <option value="<%= semesterItem.ma_hoc_ky_id %>" <%= Number(selectedSemesterId) === Number(semesterItem.ma_hoc_ky_id) ? 'selected' : '' %>><%= semesterItem.ten_hoc_ky %></option>
                 <% }) %>
               </select>
             </div>
           </form>
           <form method="POST" action="/student/registrations" class="row g-3 align-items-end">
             <input type="hidden" name="maHocKy" value="<%= selectedSemesterId || '' %>" />
-            <div class="col-md-9">
-              <label class="form-label">Lớp học phần đang mở</label>
-              <select class="form-select" name="maHocPhan" required>
+            <div class="col-lg-9">
+              <label class="form-label">Lop hoc phan dang mo</label>
+              <select class="form-select registration-select" name="maHocPhan" required <%= courses.length ? '' : 'disabled' %>>
                 <% courses.forEach(course => { %>
-                <option value="<%= course.ma_hoc_phan_id %>"><%= course.ma_hoc_phan %> - <%= course.ten_mon_hoc %> | Thứ <%= course.thu %>, tiết <%= course.tiet_bat_dau %>-<%= course.tiet_ket_thuc %> | <%= course.phong_hoc %></option>
+                <option value="<%= course.ma_hoc_phan_id %>"><%= course.ma_hoc_phan %> - <%= course.ten_mon_hoc %> (<%= course.so_tin_chi %> TC) | Thu <%= course.thu %>, tiet <%= course.tiet_bat_dau %>-<%= course.tiet_ket_thuc %> | <%= course.phong_hoc %> | <%= course.so_sv_hien_tai %>/<%= course.so_sv_max %></option>
                 <% }) %>
               </select>
+              <% if (!courses.length) { %><div class="form-text">Khong co lop hoc phan dang mo trong hoc ky nay.</div><% } %>
             </div>
-            <div class="col-md-3"><button class="btn btn-primary w-100" <%= courses.length ? '' : 'disabled' %>>Đăng ký</button></div>
+            <div class="col-lg-3"><button class="btn btn-primary w-100" <%= courses.length && student ? '' : 'disabled' %>>Dang ky</button></div>
           </form>
-        </div>
-      </div>
-      <div class="card border-0 shadow-sm">
-        <div class="card-body p-4">
-          <h2 class="h5 mb-3">Học phần đã đăng ký</h2>
-          <div class="table-responsive">
-            <table class="table table-hover align-middle">
-              <thead><tr><th>Mã lớp</th><th>Môn học</th><th>Lịch học</th><th>Phòng</th><th>Trạng thái</th><th></th></tr></thead>
-              <tbody>
-                <% registrationDetails.forEach(item => { %>
-                <tr>
-                  <td><%= item.ma_hoc_phan %></td>
-                  <td><%= item.ten_mon_hoc %></td>
-                  <td>Thứ <%= item.thu %>, tiết <%= item.tiet_bat_dau %>-<%= item.tiet_ket_thuc %></td>
-                  <td><%= item.phong_hoc %></td>
-                  <td><span class="badge text-bg-secondary"><%= item.trang_thai %></span></td>
-                  <td class="text-end"><form method="POST" action="/student/registrations/cancel/<%= item.ma_chi_tiet %>"><button class="btn btn-sm btn-outline-danger">Hủy</button></form></td>
-                </tr>
-                <% }) %>
-                <% if (!registrationDetails.length) { %><tr><td colspan="6" class="text-center text-secondary">Chưa có học phần nào.</td></tr><% } %>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </main>
+        </section>
+
+        <section class="content-card mb-4">
+          <h2 class="section-title">Lop hoc phan dang mo</h2>
+          <div class="table-responsive"><table class="table table-hover align-middle"><thead><tr><th>Ma lop</th><th>Mon hoc</th><th>Lich hoc</th><th>Giang vien</th><th>Si so</th></tr></thead><tbody><% courses.forEach(course => { %><tr><td class="fw-semibold"><%= course.ma_hoc_phan %></td><td><%= course.ten_mon_hoc %> <span class="text-secondary">(<%= course.so_tin_chi %> TC)</span></td><td>Thu <%= course.thu %>, tiet <%= course.tiet_bat_dau %>-<%= course.tiet_ket_thuc %></td><td><%= course.ten_giang_vien %></td><td><%= course.so_sv_hien_tai %>/<%= course.so_sv_max %></td></tr><% }) %><% if (!courses.length) { %><tr><td colspan="5" class="text-center text-secondary py-4">Chua co lop hoc phan dang mo.</td></tr><% } %></tbody></table></div>
+        </section>
+
+        <section class="content-card">
+          <h2 class="section-title">Hoc phan da dang ky</h2>
+          <div class="table-responsive"><table class="table table-hover align-middle"><thead><tr><th>Ma lop</th><th>Mon hoc</th><th>Lich hoc</th><th>Phong</th><th>Tin chi</th><th>Trang thai</th><th class="text-end">Thao tac</th></tr></thead><tbody><% registrationDetails.forEach(item => { %><tr class="<%= item.trang_thai === 'da_huy' ? 'table-light text-secondary' : '' %>"><td class="fw-semibold"><%= item.ma_hoc_phan %></td><td><%= item.ten_mon_hoc %></td><td>Thu <%= item.thu %>, tiet <%= item.tiet_bat_dau %>-<%= item.tiet_ket_thuc %></td><td><%= item.phong_hoc %></td><td><%= item.so_tin_chi %></td><td><% if (item.trang_thai === 'da_dang_ky') { %><span class="badge text-bg-success">Da dang ky</span><% } else { %><span class="badge text-bg-secondary">Da huy</span><% } %></td><td class="text-end"><% if (item.trang_thai === 'da_dang_ky') { %><form method="POST" action="/student/registrations/cancel/<%= item.ma_chi_tiet %>"><button class="btn btn-sm btn-outline-danger">Huy</button></form><% } %></td></tr><% }) %><% if (!registrationDetails.length) { %><tr><td colspan="7" class="text-center text-secondary py-4">Chua co hoc phan nao.</td></tr><% } %></tbody></table></div>
+        </section>
+      </main>
+    </div>
     <script src="/js/student.js"></script>
   </body>
 </html>

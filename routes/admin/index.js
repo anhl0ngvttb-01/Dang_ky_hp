@@ -6,8 +6,10 @@ const adminAuth = require("../../middleware/adminAuth");
 const router = express.Router();
 
 router.use(adminAuth);
+router.get("/", (req, res) => res.redirect("/admin/dashboard"));
 router.get("/dashboard", AdminController.dashboard);
 router.get("/students", AdminController.listStudents);
+router.post("/students", AdminController.createStudent);
 router.get("/teachers", AdminController.listTeachers);
 router.get("/subjects", CurriculumController.listSubjects);
 router.post("/subjects", CurriculumController.createSubject);

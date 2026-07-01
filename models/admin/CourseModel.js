@@ -1,9 +1,16 @@
-﻿const pool = require("../../config/db");
+const pool = require("../../config/db");
 
 module.exports = {
   async getAll() {
     const [rows] = await pool.query(
-      "SELECT * FROM hoc_phan ORDER BY ma_hoc_phan_id DESC",
+      `SELECT hp.*, mh.ma_mon_hoc AS ma_mon_hoc_code, mh.ten_mon_hoc,
+              gv.ma_giang_vien AS ma_giang_vien_code, gv.ho_ten AS ten_giang_vien,
+              hk.ma_hoc_ky AS ma_hoc_ky_code, hk.ten_hoc_ky
+       FROM hoc_phan hp
+       JOIN mon_hoc mh ON mh.ma_mon_hoc_id = hp.ma_mon_hoc
+       JOIN giang_vien gv ON gv.ma_giang_vien_id = hp.ma_giang_vien
+       JOIN hoc_ky hk ON hk.ma_hoc_ky_id = hp.ma_hoc_ky
+       ORDER BY hp.ma_hoc_phan_id DESC`,
     );
     return rows;
   },

@@ -2,7 +2,7 @@
   "name": "he-thong-dang-ky-hoc-phan",
   "version": "1.0.0",
   "private": true,
-  "description": "Hệ thống đăng ký học phần",
+  "description": "He thong dang ky hoc phan",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",

@@ -26,15 +26,19 @@ app.use(
 );
 
 app.use((req, res, next) => {
-  res.locals.appName = process.env.APP_NAME || "Hệ thống đăng ký học phần";
+  res.locals.appName = process.env.APP_NAME || "He thong dang ky hoc phan";
   next();
 });
 
 const studentRoutes = require("./routes/student");
 const authRoutes = require("./routes/auth");
+const adminRoutes = require("./routes/admin");
+const teacherRoutes = require("./routes/teacher");
 
 app.use("/student", studentRoutes);
 app.use("/auth", authRoutes);
+app.use("/admin", adminRoutes);
+app.use("/teacher", teacherRoutes);
 
 app.get("/", (req, res) => {
   res.redirect("/auth/login");

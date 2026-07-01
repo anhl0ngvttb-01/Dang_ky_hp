@@ -1,12 +1,39 @@
-﻿const TeacherProfileModel = require("../../models/teacher/TeacherProfileModel");
+const TeacherProfileModel = require("../../models/teacher/TeacherProfileModel");
 const CourseTeachingModel = require("../../models/teacher/CourseTeachingModel");
 
 const TeacherController = {
   async dashboard(req, res) {
-    return res.render("teacher/dashboard", {
-      title: "Dashboard giảng viên",
-      user: req.session.user,
-    });
+    try {
+      const teacher = await TeacherProfileModel.getByUserId(req.session.user.maNguoiDung);
+      const courses = teacher
+        ? await CourseTeachingModel.getByTeacher(teacher.ma_giang_vien_id)
+        : [];
+      const overview = {
+        total: courses.length,
+        open: courses.filter((course) => course.trang_thai === "mo_dang_ky").length,
+        locked: courses.filter((course) => course.trang_thai === "khoa_dang_ky").length,
+        cancelled: courses.filter((course) => course.trang_thai === "huy_lop").length,
+      };
+
+      return res.render("teacher/dashboard", {
+        title: "Dashboard giảng viên",
+        user: req.session.user,
+        teacher,
+        courses: courses.slice(0, 5),
+        overview,
+        error: null,
+      });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).render("teacher/dashboard", {
+        title: "Dashboard giảng viên",
+        user: req.session.user,
+        teacher: null,
+        courses: [],
+        overview: { total: 0, open: 0, locked: 0, cancelled: 0 },
+        error: "Không thể tải dashboard giảng viên.",
+      });
+    }
   },
 
   async profile(req, res) {
