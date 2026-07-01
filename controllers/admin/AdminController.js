@@ -11,6 +11,7 @@ const AdminController = {
       console.error(error);
       return res.status(500).render("admin/dashboard", {
         title: "Bảng điều khiển",
+        title: "Bảng điều khiển 234224",
         overview: {},
         error: "Không thể tải dashboard.",
       });
