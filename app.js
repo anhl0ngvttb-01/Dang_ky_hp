@@ -31,25 +31,21 @@ app.use((req, res, next) => {
 });
 
 const studentRoutes = require("./routes/student");
-app.use("/student", studentRoutes);
-app.get("/", (req, res) =>{
-  res.redirect("/student/dashboard")
-});
-
-// Temporary test login route for UI testing (do not commit to production)
-app.get('/__login_test', (req, res) => {
-  // Seed user id from database (adjust if different in your seed)
-  req.session.user = { maNguoiDung: 2, maVaiTro: 2, username: 'sv202601' };
-  return res.redirect('/student/dashboard');
 const authRoutes = require("./routes/auth");
+
+app.use("/student", studentRoutes);
 app.use("/auth", authRoutes);
 
 app.get("/", (req, res) => {
   res.redirect("/auth/login");
 });
 
-const PORT = Number(process.env.PORT) || 3000;
+app.get("/__login_test", (req, res) => {
+  req.session.user = { maNguoiDung: 2, maVaiTro: 2, username: "sv202601" };
+  return res.redirect("/student/dashboard");
+});
 
+const PORT = Number(process.env.PORT) || 3000;
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
 });
