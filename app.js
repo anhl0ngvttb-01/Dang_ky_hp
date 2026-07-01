@@ -1,5 +1,4 @@
 require("dotenv").config();
-
 const express = require("express");
 const session = require("express-session");
 const bodyParser = require("body-parser");
@@ -30,12 +29,7 @@ app.use((req, res, next) => {
   res.locals.appName = process.env.APP_NAME || "Hệ thống đăng ký học phần";
   next();
 });
-/*
-app.get("/", (req, res) => {
-  res.send("Hệ thống đăng ký học phần đang chạy...");
 
-
-});*/
 const studentRoutes = require("./routes/student");
 app.use("/student", studentRoutes);
 app.get("/", (req, res) =>{
@@ -47,6 +41,11 @@ app.get('/__login_test', (req, res) => {
   // Seed user id from database (adjust if different in your seed)
   req.session.user = { maNguoiDung: 2, maVaiTro: 2, username: 'sv202601' };
   return res.redirect('/student/dashboard');
+const authRoutes = require("./routes/auth");
+app.use("/auth", authRoutes);
+
+app.get("/", (req, res) => {
+  res.redirect("/auth/login");
 });
 
 const PORT = Number(process.env.PORT) || 3000;
