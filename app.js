@@ -1,5 +1,4 @@
 require("dotenv").config();
-
 const express = require("express");
 const session = require("express-session");
 const bodyParser = require("body-parser");
@@ -30,9 +29,11 @@ app.use((req, res, next) => {
   res.locals.appName = process.env.APP_NAME || "Hệ thống đăng ký học phần";
   next();
 });
+const authRoutes = require("./routes/auth");
+app.use("/auth", authRoutes);
 
 app.get("/", (req, res) => {
-  res.send("Hệ thống đăng ký học phần đang chạy...");
+  res.redirect("/auth/login");
 });
 
 const PORT = Number(process.env.PORT) || 3000;
